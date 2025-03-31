@@ -5,13 +5,11 @@
 	import { WEBUI_NAME, config, showChangelog } from '$lib/stores';
 	import { compareVersion } from '$lib/utils';
 	import { onMount, getContext } from 'svelte';
-
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 
 	const i18n = getContext('i18n');
 
 	let ollamaVersion = '';
-
 	let updateAvailable = null;
 	let version = {
 		current: '',
@@ -20,32 +18,41 @@
 
 	const checkForVersionUpdates = async () => {
 		updateAvailable = null;
-		version = await getVersionUpdates(localStorage.token).catch((error) => {
-			return {
-				current: WEBUI_VERSION,
-				latest: WEBUI_VERSION
-			};
-		});
-
-		console.log(version);
-
+		version = await getVersionUpdates(localStorage.token).catch(() => ({
+			current: WEBUI_VERSION,
+			latest: WEBUI_VERSION
+		}));
 		updateAvailable = compareVersion(version.latest, version.current);
-		console.log(updateAvailable);
 	};
 
 	onMount(async () => {
-		ollamaVersion = await getOllamaVersion(localStorage.token).catch((error) => {
-			return '';
-		});
-
+		ollamaVersion = await getOllamaVersion(localStorage.token).catch(() => '');
 		checkForVersionUpdates();
 	});
 </script>
 
 <div class="flex flex-col h-full justify-between space-y-3 text-sm mb-6">
-	<div class=" space-y-3 overflow-y-scroll max-h-[28rem] lg:max-h-full">
+	<div class="space-y-3 overflow-y-scroll max-h-[28rem] lg:max-h-full">
+
+		<!-- 🧠 OidaNice Zusatz: Branding-Block -->
+		<div class="text-sm text-gray-800 dark:text-gray-300 leading-relaxed space-y-2">
+			<p><strong>OidaNice AIUI</strong> ist eine öffentlich zugängliche, nicht-kommerzielle Hosting-Plattform für Sprachmodelle (LLMs).</p>
+			<p>Der Zugang ist dauerhaft kostenlos und dient als Beispiel, wie man mit Open-Source-Software und recycelter Hardware moderne KI-Lösungen bereitstellen kann.</p>
+			<p>Diese Plattform basiert auf <strong>Open WebUI</strong> und wird als <strong>unabhängiger Fork</strong> unter Einhaltung der ursprünglichen Lizenzbedingungen bereitgestellt.</p>
+			<p>
+				Weitere Infos auf
+				<a href="https://oidanice.at" target="_blank" class="underline">oidanice.at</a>
+				&nbsp;|&nbsp;
+				GitHub:
+				<a href="https://github.com/LL4nc33/OidaNice-AIUI" target="_blank" class="underline">OidaNice-AIUI</a>
+			</p>
+		</div>
+
+		<hr class="border-gray-200 dark:border-gray-800 my-2" />
+
+		<!-- Standard WebUI Infos -->
 		<div>
-			<div class=" mb-2.5 text-sm font-medium flex space-x-2 items-center">
+			<div class="mb-2.5 text-sm font-medium flex space-x-2 items-center">
 				<div>
 					{$WEBUI_NAME}
 					{$i18n.t('Version')}
@@ -57,34 +64,22 @@
 						<Tooltip content={WEBUI_BUILD_HASH}>
 							v{WEBUI_VERSION}
 						</Tooltip>
-
-						<a
-							href="https://github.com/open-webui/open-webui/releases/tag/v{version.latest}"
-							target="_blank"
-						>
+						<a href="https://github.com/open-webui/open-webui/releases/tag/v{version.latest}" target="_blank">
 							{updateAvailable === null
 								? $i18n.t('Checking for updates...')
 								: updateAvailable
-									? `(v${version.latest} ${$i18n.t('available!')})`
-									: $i18n.t('(latest)')}
+								? `(v${version.latest} ${$i18n.t('available!')})`
+								: $i18n.t('(latest)')}
 						</a>
 					</div>
-
-					<button
-						class=" underline flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-500"
-						on:click={() => {
-							showChangelog.set(true);
-						}}
-					>
+					<button class="underline flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-500" on:click={() => showChangelog.set(true)}>
 						<div>{$i18n.t("See what's new")}</div>
 					</button>
 				</div>
 
 				<button
-					class=" text-xs px-3 py-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-850 dark:hover:bg-gray-800 transition rounded-lg font-medium"
-					on:click={() => {
-						checkForVersionUpdates();
-					}}
+					class="text-xs px-3 py-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-850 dark:hover:bg-gray-800 transition rounded-lg font-medium"
+					on:click={() => checkForVersionUpdates()}
 				>
 					{$i18n.t('Check for updates')}
 				</button>
@@ -92,10 +87,9 @@
 		</div>
 
 		{#if ollamaVersion}
-			<hr class=" border-gray-100 dark:border-gray-850" />
-
+			<hr class="border-gray-100 dark:border-gray-850" />
 			<div>
-				<div class=" mb-2.5 text-sm font-medium">{$i18n.t('Ollama Version')}</div>
+				<div class="mb-2.5 text-sm font-medium">{$i18n.t('Ollama Version')}</div>
 				<div class="flex w-full">
 					<div class="flex-1 text-xs text-gray-700 dark:text-gray-200">
 						{ollamaVersion ?? 'N/A'}
@@ -104,38 +98,26 @@
 			</div>
 		{/if}
 
-		<hr class=" border-gray-100 dark:border-gray-850" />
+		<hr class="border-gray-100 dark:border-gray-850" />
 
 		{#if $config?.license_metadata}
 			<div class="mb-2 text-xs">
 				{#if !$WEBUI_NAME.includes('Open WebUI')}
-					<span class=" text-gray-500 dark:text-gray-300 font-medium">{$WEBUI_NAME}</span> -
+					<span class="text-gray-500 dark:text-gray-300 font-medium">{$WEBUI_NAME}</span> -
 				{/if}
-
-				<span class=" capitalize">{$config?.license_metadata?.type}</span> license purchased by
-				<span class=" capitalize">{$config?.license_metadata?.organization_name}</span>
+				<span class="capitalize">{$config?.license_metadata?.type}</span> license purchased by
+				<span class="capitalize">{$config?.license_metadata?.organization_name}</span>
 			</div>
 		{:else}
 			<div class="flex space-x-1">
 				<a href="https://discord.gg/5rJgQTnV4s" target="_blank">
-					<img
-						alt="Discord"
-						src="https://img.shields.io/badge/Discord-Open_WebUI-blue?logo=discord&logoColor=white"
-					/>
+					<img alt="Discord" src="https://img.shields.io/badge/Discord-Open_WebUI-blue?logo=discord&logoColor=white" />
 				</a>
-
 				<a href="https://twitter.com/OpenWebUI" target="_blank">
-					<img
-						alt="X (formerly Twitter) Follow"
-						src="https://img.shields.io/twitter/follow/OpenWebUI"
-					/>
+					<img alt="X (formerly Twitter) Follow" src="https://img.shields.io/twitter/follow/OpenWebUI" />
 				</a>
-
 				<a href="https://github.com/open-webui/open-webui" target="_blank">
-					<img
-						alt="Github Repo"
-						src="https://img.shields.io/github/stars/open-webui/open-webui?style=social&label=Star us on Github"
-					/>
+					<img alt="Github Repo" src="https://img.shields.io/github/stars/open-webui/open-webui?style=social&label=Star us on Github" />
 				</a>
 			</div>
 		{/if}
@@ -147,12 +129,11 @@
 		</div>
 
 		<div>
-			<pre
-				class="text-xs text-gray-400 dark:text-gray-500">Copyright (c) {new Date().getFullYear()} <a
-					href="https://openwebui.com"
-					target="_blank"
-					class="underline">Open WebUI (Timothy Jaeryang Baek)</a
-				>
+			<pre class="text-xs text-gray-400 dark:text-gray-500">
+Copyright (c) {new Date().getFullYear()} <a
+	href="https://openwebui.com"
+	target="_blank"
+	class="underline">Open WebUI (Timothy Jaeryang Baek)</a>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -179,16 +160,16 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-</pre>
+			</pre>
 		</div>
 
 		<div class="mt-2 text-xs text-gray-400 dark:text-gray-500">
 			{$i18n.t('Created by')}
 			<a
-				class=" text-gray-500 dark:text-gray-300 font-medium"
+				class="text-gray-500 dark:text-gray-300 font-medium"
 				href="https://github.com/tjbck"
-				target="_blank">Timothy J. Baek</a
-			>
+				target="_blank"
+			>Timothy J. Baek</a>
 		</div>
 	</div>
 </div>

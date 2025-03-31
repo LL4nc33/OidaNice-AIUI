@@ -1,4 +1,11 @@
-# Open WebUI 👋
+# OidaNice AIUI 🚀
+
+> 📦 Dieses Repository ist ein **Fork von [Open WebUI](https://github.com/open-webui/open-webui)**  
+> 🧠 Bereitgestellt als nicht-kommerzielle Plattform unter dem Namen **OidaNice AIUI**  
+> 🌐 Kostenlos nutzbar über [llm.oidanice.at](https://llm.oidanice.at) • Projektseite: [oidanice.at](https://oidanice.at)
+
+Dieses Projekt dient als technisches Showcase für öffentlich zugängliches, DSGVO-freundliches AI-Hosting auf Basis von Open-Source-Software und gebrauchter Hardware.  
+Die ursprüngliche Lizenz (BSD-3-Clause) bleibt vollständig erhalten.
 
 ![GitHub stars](https://img.shields.io/github/stars/open-webui/open-webui?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/open-webui/open-webui?style=social)
